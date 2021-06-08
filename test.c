@@ -166,6 +166,10 @@ const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
 
     putchar(0x22);
     while(src != 0 && spaces != 0) {
+        // Compress spaces
+        if (*src == 0x20 && *(src+1) == 0x20) {
+            src++; continue;
+        }
         int ncharacters = *spaces++;
         if (ncharacters == -2) break;
 
@@ -173,7 +177,9 @@ const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
         
         for(int i=0; i < ncharacters; i++) {
             if(*src == 0) return;
-            putchar(*src++);
+            char c = *src++;
+            // Use pound sign instead of space
+            putchar((c == 0x20) ? 0x23 : c);
         }
 
         if (nspaces == -1) {
@@ -187,38 +193,11 @@ const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
             putchar(0x20);
         }
     }
+    putchar(0x22);
+    putchar(0x0a);
 
     return src;
 }
-
-char *escape(const char *buf) {
-    char *dest = (char *) malloc(8 * 1024 * 1024);
-    char *dptr = dest;
-    char *ptr = buf;
-    while (*ptr != 0) {
-        // Compress spaces
-        if (*ptr == 0x20 && *(ptr+1) == 0x20) {
-            ptr++; continue;
-        }
-
-        if (*ptr == 0x0a) {
-            *dptr++ = 0x5c;
-            *dptr++ = 0x6e;
-            ptr++;
-        } else if (*ptr == 0x20) {
-            *dptr++ = 0x23;
-            ptr++;
-        } else if (*ptr == 0x5c || *ptr == 0x22) {
-            *dptr++ = 0x5c;
-            *dptr++ = *ptr++;
-        } else {
-            *dptr++ = *ptr++;
-        }
-    }
-
-    return dest;
-}
-
 
 int main() {
     const char flag0[] = {99, 111, 110, 115, 116, 32, 105, 110, 116, 32, 102, 32, 61, 32, 48, 59, 92, 10, 0};
@@ -227,18 +206,20 @@ int main() {
 
     const char preamble[] = {99, 111, 110, 115, 116, 32, 99, 104, 97, 114, 32, 42, 108, 32, 61, 32, 92, 10, 0};
     printf(preamble);
-    char *escaped = escape(l);
+    char *escaped = l;
     escaped = printEntryEscaped(escaped, life, 0);
     escaped = printEntryEscaped(escaped, life, f ? 1 : 3);
     escaped = printEntryEscaped(escaped, life, 2);
     escaped = printEntryEscaped(escaped, life, f ? 3 : 1);
     escaped = printEntryEscaped(escaped, life, 4);
-    free(escaped);
+    putchar(0x22);putchar(0x3b);
 
     putchar(0x0a); putchar(0x0a);
     const char *ptr = l;
     while(*ptr != 0x00) {
-        putchar(*ptr++);
+        char c = *ptr++;
+        // Decode pound sign to space
+        putchar((c == 0x23) ? 0x20 : c);
     }
 
 }
