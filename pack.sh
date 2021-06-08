@@ -4,7 +4,7 @@ sed -e 's#^.*//.*$##' < main.c |  # Strip comments
      sed -e 's/ \+/ /g' |  # Squash spaces
      sed -e 's/, /,/g' |  # Remove argument spaces
      tr ' ' '#' | # Translate spaces
-     awk 'BEGIN {print "const int f = 1;\nconst char *l = \\"} { print "\"" $0 "\";\n\n" }' > minify.c
+     awk 'BEGIN {print "int f = 1;\nchar *l = \\"} { print "\"" $0 "\";\n\n" }' > minify.c
 
 cat minify.c main.c > packed.c
 

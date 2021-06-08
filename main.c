@@ -1,11 +1,6 @@
 
 
-const int life[]={99, -1,
-99, -1,
-99, -1,
-99, -1,
-99, -1,
-99, -1,
+int life[]={99, -1,
 99, -1,
 99, -1,
 99, -1,
@@ -45,6 +40,8 @@ const int life[]={99, -1,
 99, -1,
 -1, -2, -2};
 
+int putchar(int);
+int printf(const char*, ...);
 char *skipWhitespace(char *ptr) {
     while (*ptr == 0x20 || *ptr == 0x0a  || *ptr == 0x09 || *ptr == 0x0d) {
         ptr++;
@@ -53,7 +50,7 @@ char *skipWhitespace(char *ptr) {
     return ptr;
 }
 
-const char *printEntryEscaped(const char *buf, const int *spaces, int offset) {
+char *printEntry(char *buf, int *spaces, int offset) {
     // Seek to correct position
     while (offset != 0) {
         if (*spaces == -2) offset--;
@@ -69,7 +66,7 @@ const char *printEntryEscaped(const char *buf, const int *spaces, int offset) {
         int nspaces = *spaces++;
         
         for(int i=0; i < ncharacters; i++) {
-            if(*src == 0) return;
+            if(*src == 0) return 0;
             src = skipWhitespace(src);
             char c = *src++;
             // Use pound sign instead of space
@@ -94,27 +91,28 @@ const char *printEntryEscaped(const char *buf, const int *spaces, int offset) {
 }
 
 int main() {
-    const char flag0[] = {99, 111, 110, 115, 116, 32, 105, 110, 116, 32, 102, 32, 61, 32, 48, 59, 92, 10, 0};
-    const char flag1[] = {99, 111, 110, 115, 116, 32, 105, 110, 116, 32, 102, 32, 61, 32, 49, 59, 92, 10, 0};
-    printf(f ? flag0 : flag1);
+    char flag[] = {105, 110, 116, 32, 102, 32, 61, 32, 48, 59, 10, 0};
+    flag[8] = (f ? 48 : 49);
+    printf(flag);
 
-    const char preamble[] = {99, 111, 110, 115, 116, 32, 99, 104, 97, 114, 32, 42, 108, 32, 61, 32, 92, 10, 0};
+    char preamble[] = {99, 104, 97, 114, 32, 42, 108, 32, 61, 32, 92, 10, 0};
     printf(preamble);
-    char *escaped = l;
-    escaped = printEntryEscaped(escaped, life, 0);
-    escaped = printEntryEscaped(escaped, life, f ? 1 : 3);
-    escaped = printEntryEscaped(escaped, life, 2);
-    escaped = printEntryEscaped(escaped, life, f ? 3 : 1);
-    escaped = printEntryEscaped(escaped, life, 4);
+    char *p = l;
+    p = printEntry(p, life, 0);
+    p = printEntry(p, life, f ? 1 : 3);
+    p = printEntry(p, life, 2);
+    p = printEntry(p, life, f ? 3 : 1);
+    p = printEntry(p, life, 4);
     putchar(0x22);putchar(0x3b);
 
     putchar(0x0a); putchar(0x0a);
-    const char *ptr = l;
+    char *ptr = l;
     while(*ptr != 0x00) {
         char c = *ptr++;
         // Decode pound sign to space
         if (c != 0x20) putchar((c == 0x23) ? 0x20 : c);
     }
+    /*................................-C_S_*/
 
 }
 
