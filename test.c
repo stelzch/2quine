@@ -1,129 +1,3 @@
-const int f = 1;
-const char *l = \
-"const int life[]={72, -1,"
-"72, -1,"
-"72, -1,"
-"72,-1,"
-"3, 4, 3, 2, 6, 1, 7, -1,"
-"3, 4, 3, 2, 6, 1, 3, -1,"
-"3, 4, 3, 2, 2, 5, 6, -1,"
-"3, 4, 3, 2, 5, 2, 6, -1,"
-"3, 4, 3, 2, 5, 2, 3, -1,"
-"6, 1, 3, 2, 2, 5, 7, -1,"
-"6, 1, 3, 2, 2, 5, 7, -1,"
-"0,-1,"
-"3, 2, 3, 4, 3, 1, 3, 1, 11, 3, 5, 4, 11, 1, 7, 2, 8, -1,"
-"3, 2, 3, 4, 3, 1, 3, 1, 11, 2, 3, 1, 3, 3, 11, 1, 3, 5, 9, -1,"
-"3, 2, 4, 2, 4, 1, 3, 5, 3, 5, 3, 3, 3, 6, 3, 5, 6, 2, 2, -1,"
-"3, 2, 3, 1, 2, 1, 3, 1, 3, 5, 3, 5, 9, 6, 3, 5, 6, 3, 7, -1,"
-"3, 2, 3, 4, 3, 1, 3, 5, 3, 5, 9, 6, 3, 5, 3, 12, 2, -1,"
-"3, 2, 3, 4, 3, 1, 3, 5, 3, 5, 3, 3, 3, 6, 3, 5, 7, 2, 8, -1,"
-"3, 2, 3, 4, 3, 1, 3, 5, 3, 5, 3, 3, 3, 6, 3, 5, 7, 2, 7, -1,"
-"0,-1,"
-"2, 5, 3, 8, 2, 11, -1,"
-"1, 3, 1, 3, 2, 9, 1, 11, -1,"
-"3, 3, 3, 1, 3, 3, 3, 5, 3, 4, -1,"
-"9, 1, 3, 2, 3, 6, 3, 4, -1,"
-"9, 1, 8, 6, 3, 4, -1,"
-"3, 3, 3, 1, 3, 3, 3, 5, 3, 4, -1,"
-"3, 3, 3, 1, 3, 4, 3, 4, 3, 4, -1,"
-"72,-1,"
-"72, -1,"
-"72, -1,"
-"72, -1,"
-"18000, -1, -2, -2};"
-""
-"void printEntryEscaped(const char *src, const int *spaces) {"
-"    putchar(0x22);"
-"    while(src != 0 && spaces != 0) {"
-"        int ncharacters = *spaces++;"
-"        if (ncharacters == -2) break;"
-""
-"        int nspaces = *spaces++;"
-"        "
-"        for(int i=0; i < ncharacters; i++) {"
-"            if(*src == 0) return;"
-"            putchar(*src++);"
-"        }"
-""
-"        if (nspaces == -1) {"
-"            putchar(0x22);"
-"            putchar(0x0a);"
-"            putchar(0x22);"
-"            continue;"
-"        }"
-""
-"        for(int i=0; i < nspaces; i++) {"
-"            putchar(0x20);"
-"        }"
-"    }"
-"}"
-""
-"char *escape(const char *buf) {"
-"    char *dest = (char *) malloc(1 * 1024 * 1024);"
-"    char *dptr = dest;"
-"    char *ptr = buf;"
-"    while (*ptr != 0) {"
-"        if (*ptr == 0x0a) {"
-"            *dptr++ = 0x5c;"
-"            *dptr++ = 0x6e;"
-"            ptr++;"
-"        } else if (*ptr == 0x20) {"
-"            *dptr++ = 0x23;"
-"            ptr++;"
-"        } else if (*ptr == 0x5c || *ptr == 0x22) {"
-"            *dptr++ = 0x5c;"
-"            *dptr++ = *ptr++;"
-"        } else {"
-"            *dptr++ = *ptr++;"
-"        }"
-"    }"
-""
-"    return dest;"
-"}"
-""
-"void printEscaped(char c, int wrapped) {"
-"    if (wrapped & (c == 0x22 || c == 0x5c))"
-"        putchar(0x5c);"
-"    putchar(c);"
-"}"
-""
-"void printLine(const char *line, int wrapped) {"
-"    const char *ptr = line;"
-""
-"    while(*ptr != 0) {"
-"        printEscaped(*ptr, wrapped);"
-"        ptr++;"
-"    }"
-"}"
-""
-"void printAll(int wrapped) {"
-"    const char **ptr = l;"
-"    do {"
-"        if (wrapped) putchar(0x22);"
-""
-"        printLine(*ptr++, wrapped);"
-""
-"        if (wrapped) {"
-"            putchar(0x22);"
-"            putchar(0x2c);"
-"        }"
-"        putchar(0x0a);"
-"    }"
-"    while(*ptr != 0);"
-"}"
-""
-""
-"int main() {"
-"    char *escaped = escape(l);"
-"    printEntryEscaped(escaped, life);"
-"    free(escaped);"
-"}"
-"";
-
-////////////////////////////////
-
-
 const int life[]={150, -1,
 150, -1,
 150, -1,
@@ -157,7 +31,15 @@ const int life[]={150, -1,
 0,-1,-2,
 150,-1,150,-1,150,-1,150,-1,150,-1,150,-1,150,-1,150,-1,150,-1,150,-1,-2, };
 
-const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
+char *skipWhitespace(char *ptr) {
+    while (*ptr == 0x20 || *ptr == 0x0a  || *ptr == 0x09 || *ptr == 0x0d) {
+        ptr++;
+    }
+   
+    return ptr;
+}
+
+const char *printEntryEscaped(const char *buf, const int *spaces, int offset) {
     // Seek to correct position
     while (offset != 0) {
         if (*spaces == -2) offset--;
@@ -165,11 +47,8 @@ const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
     }
 
     putchar(0x22);
+    char *src = buf;
     while(src != 0 && spaces != 0) {
-        // Compress spaces
-        if (*src == 0x20 && *(src+1) == 0x20) {
-            src++; continue;
-        }
         int ncharacters = *spaces++;
         if (ncharacters == -2) break;
 
@@ -177,9 +56,10 @@ const char *printEntryEscaped(const char *src, const int *spaces, int offset) {
         
         for(int i=0; i < ncharacters; i++) {
             if(*src == 0) return;
+            src = skipWhitespace(src);
             char c = *src++;
             // Use pound sign instead of space
-            putchar((c == 0x20) ? 0x23 : c);
+            putchar(c);
         }
 
         if (nspaces == -1) {
@@ -219,7 +99,7 @@ int main() {
     while(*ptr != 0x00) {
         char c = *ptr++;
         // Decode pound sign to space
-        putchar((c == 0x23) ? 0x20 : c);
+        if (c != 0x20) putchar((c == 0x23) ? 0x20 : c);
     }
 
 }
